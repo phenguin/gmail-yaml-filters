@@ -6,6 +6,7 @@ from __future__ import print_function
 from collections import defaultdict
 from operator import itemgetter
 import argparse
+import pprint
 import os
 import sys
 
@@ -22,6 +23,7 @@ import oauth2client.tools
 Pushes auto-generated mail filters to the Gmail API.
 """
 
+pp = pprint.PrettyPrinter(indent=2)
 
 CONDITION_KEY_MAP = {
     'from': 'from',
@@ -212,7 +214,7 @@ def find_filters_not_in_ruleset(ruleset, service, dry_run):
 def prune_filters_not_in_ruleset(ruleset, service, dry_run=False):
     prunable_filters = find_filters_not_in_ruleset(ruleset, service, dry_run)
     for prunable_filter in prunable_filters:
-        print('Deleting', prunable_filter['id'], prunable_filter['criteria'], prunable_filter['action'], file=sys.stderr)
+        print('\nDeleting filter:\n', pp.pformat(prunable_filter), file=sys.stderr)
         request = service.users().settings().filters().delete(userId='me', id=prunable_filter['id'])
         if not dry_run:
             request.execute()
